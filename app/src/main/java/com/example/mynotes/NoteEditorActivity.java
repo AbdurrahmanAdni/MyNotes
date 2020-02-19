@@ -3,7 +3,9 @@ package com.example.mynotes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +17,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class NoteEditorActivity extends AppCompatActivity {
 
@@ -99,6 +106,7 @@ public class NoteEditorActivity extends AppCompatActivity {
 
             }
 
+            saveMap(MainActivity.noteMap);
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
 
         } else if (item.getItemId() == R.id.notes){
@@ -108,6 +116,18 @@ public class NoteEditorActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public void saveMap (HashMap<String, String> hashMap){
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("myNote", Context.MODE_PRIVATE);
+        if (sharedPreferences != null){
+            JSONObject jsonObject = new JSONObject(hashMap);
+            String jsonToString = jsonObject.toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("noteMap").commit();
+            editor.putString("noteMap", jsonToString);
+            editor.commit();
+        }
     }
 
     @Override
