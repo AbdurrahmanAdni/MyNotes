@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/notes"
-        android:title="add notes"></item>
+        android:id="@+id/delete"
+        android:title="Delete"></item>
 
 </menu>

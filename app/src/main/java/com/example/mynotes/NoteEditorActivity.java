@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class NoteEditorActivity extends AppCompatActivity {
     String newText;
     Boolean isTitleChanged;
     Boolean isTextChanged;
+    Boolean isSaved;
     int option;
     int noteId;
 
@@ -71,11 +73,13 @@ public class NoteEditorActivity extends AppCompatActivity {
 
                 }
 
+                //Penanda bahwa notes baru sudah ada
+                //Jika disimpan lagi maka penyimpanan yang sudah ada akan diubah, buka di-create ulang
+                option = 2;
+
             } else if (option == 2) {
                 //Kasus ketika edit note yang telah ada
-
                 Log.i("Option", "Save for Edited Notes");
-
               if (isTitleChanged && isTextChanged) {
 
                   Log.i("Saving", "Title and text changed");
@@ -85,36 +89,47 @@ public class NoteEditorActivity extends AppCompatActivity {
                   MainActivity.arrayAdapter.notifyDataSetChanged();
 
               } else if (isTitleChanged && !isTextChanged) {
-
                   Log.i("Saving", "Title and not(text changed)");
-
                   MainActivity.noteMap.put(newTitle, oldText);
                   MainActivity.listOfTitle.remove(noteId);
                   MainActivity.listOfTitle.add(newTitle);
                   MainActivity.arrayAdapter.notifyDataSetChanged();
 
               } else if (!isTitleChanged && isTextChanged) {
-
                   Log.i("Saving", "!(Title) and text changed");
                   MainActivity.noteMap.put(oldTitle, newText);
                   MainActivity.listOfTitle.remove(noteId);
                   MainActivity.listOfTitle.add(oldTitle);
                   MainActivity.arrayAdapter.notifyDataSetChanged();
 
-
               }
-
             }
-
             saveMap(MainActivity.noteMap);
+            isSaved = true;
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
 
-        } else if (item.getItemId() == R.id.notes){
+        } else if (item.getItemId() == R.id.delete){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            if (option == 2){
+                Log.i("Menu Editor Toolbar", "Delete");
 
-            Log.i("Menu Editor Toolbar", "Notes");
-
+                MainActivity.noteMap.remove(MainActivity.listOfTitle.get(noteId));
+                MainActivity.listOfTitle.remove(noteId);
+                MainActivity.arrayAdapter.notifyDataSetChanged();
+                saveMap(MainActivity.noteMap);
+                startActivity(intent);
+            }
+            else {
+                startActivity(intent);
+            }
+            Toast.makeText(getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
         }
 
+        else if (item.getItemId() == R.id.home){
+
+            onBackPressed();
+
+        }
         return true;
     }
 
@@ -135,6 +150,9 @@ public class NoteEditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_editor);
 
+        //Inisialisasi notes belum disimpan
+        isSaved = false;
+
         //Inisialisasi isTitleChaged = false
         isTitleChanged = false;
         //Inisialisasi isTextChanged = false
@@ -144,6 +162,15 @@ public class NoteEditorActivity extends AppCompatActivity {
         //Integrasi Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         //EditText
         EditText titleField = (EditText) findViewById(R.id.title);

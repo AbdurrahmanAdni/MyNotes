@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public HashMap<String,String> loadHashMap(){
+    public HashMap<String,String> loadNoteMap(){
 
         HashMap<String,String> hashMap = new HashMap<String, String>();
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("myNote", Context.MODE_PRIVATE);
@@ -96,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i("Activity 1", "On Create");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Pembuatan HashMap yang memetakan Title ke isi Notes
         noteMap = new HashMap<String, String>();
-        noteMap = loadHashMap();
+        noteMap = loadNoteMap();
 
         //Pembuatan arrayAdapter
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listOfTitle);
@@ -151,8 +153,26 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
 
+        Log.i("Activity 1", "On Pause");
+
+        saveMap(noteMap);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.i("Activity 1", "On Resume");
+
+        noteMap = loadNoteMap();
+        arrayAdapter.notifyDataSetChanged();
 
     }
 }
